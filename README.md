@@ -40,7 +40,8 @@ Fluent 2 的设计资产真正与框架解耦的核心是 **design tokens**（`@
 ```
 fluent2-design-skills/
 ├── README.md
-├── install.sh              # 安装到 DSH 或 .agents skills 目录
+├── install.sh              # 安装到 DSH 或 .agents skills 目录（Bash / macOS / Linux）
+├── install.ps1             # 安装到 DSH 或 .agents skills 目录（PowerShell / Windows）
 ├── data/                   # 机器可读参考数据（token 等）
 │   └── tokens/fluent-tokens.json
 ├── skills/                 # 标准 SKILL.md 目录集（tool-agnostic）
@@ -62,6 +63,15 @@ fluent2-design-skills/
 ./install.sh --dsh          # 装到项目 .dsh/skills（或 ~/.dsh/skills）
 ./install.sh --agents       # 装到 ~/.agents/skills
 ```
+
+Windows（PowerShell）：
+
+```powershell
+.\install.ps1 --dsh           # 装到项目 .dsh/skills（或 -User 装到 ~/.dsh/skills）
+.\install.ps1 --agents        # 装到 ~/.agents/skills
+```
+
+> `install.ps1` 优先建符号链接；无管理员/开发者模式权限时自动降级为目录联接（junction），再退化为整目录复制，保证在受限环境中也能完成安装。
 
 DSH 会从项目 `.dsh/skills`、`~/.agents/skills`、`~/.dsh/skills` 自动发现 `SKILL.md`。
 
