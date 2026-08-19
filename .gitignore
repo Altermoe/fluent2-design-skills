@@ -1,0 +1,4 @@
+node_modules/
+work_tok/
+*.log
+.DS_Store
