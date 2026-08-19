@@ -1,6 +1,8 @@
 # Fluent 2 Design Skills
 
-把微软 [Fluent 2](https://fluent2.microsoft.design/) 设计系统提取为一套**框架无关**的设计 skills，供 AI agent 在任意 UI 框架（CSS/Tailwind、React、Flutter、Web Component 等）里复用「同一套设计语言」。
+把微软 [Fluent 2](https://fluent2.microsoft.design/) 设计系统提取为一套**框架无关**的设计 skills，供 AI agent 在任意 UI 框架（CSS/UnoCSS/Tailwind、React、Vue 3、Flutter、Web Component 等）里复用「同一套设计语言」。
+
+> 优先级约定：**TypeScript 优先、Vite 8 优先**（Vite 8 是首个 Rolldown 稳定版），相关框架指南一律用 `.ts` 配置。
 
 ## 核心理念
 
@@ -8,7 +10,7 @@ Fluent 2 的设计资产真正与框架解耦的核心是 **design tokens**（`@
 本仓库把「不可变的语义规则」（语言层）与「可变的框架映射」（适配层）分离：
 
 - **语言层**（框架无关）：foundations / tokens / components / patterns / verify
-- **适配层**（各框架）：css / react / flutter
+- **适配层**（各框架）：css / vue / react / flutter
 
 改框架不动语言，反之亦然。AI 依据 tokens 输出正确的**语义值**而非硬编码的心血来潮值，再由 adapter 翻译成目标框架表达。
 
@@ -20,8 +22,9 @@ Fluent 2 的设计资产真正与框架解耦的核心是 **design tokens**（`@
 | `fluent-tokens` | 语言 | 语义 token 字典（真实值来自 `@fluentui/tokens`） |
 | `fluent-components` | 语言 | 组件解剖（anatomy / parts / 状态 / 尺寸 / 行为规格） |
 | `fluent-patterns` | 语言 | 布局 / 导航 / 表单 / 数据展示等模式 |
-| `fluent-adapter-css` | 适配 | token → CSS 自定义属性 / Tailwind config |
-| `fluent-adapter-react` | 适配 | token → React / Fluent UI React API |
+| `fluent-adapter-css` | 适配 | token → CSS 变量 / **UnoCSS preset（TS）** / Tailwind config |
+| `fluent-adapter-vue` | 适配 | token → Vue 3（Vite 8 + TS）+ UnoCSS / Fluent Web Components |
+| `fluent-adapter-react` | 适配 | token → React / Fluent UI React v9（TS，Vite 8） |
 | `fluent-adapter-flutter` | 适配 | token → Flutter ThemeData / ThemeExtension |
 | `fluent-verify` | 工具 | 用 token/规则做一致性审计的 checklist |
 
@@ -45,7 +48,8 @@ fluent2-design-skills/
 │   ├── fluent-tokens/
 │   ├── fluent-components/
 │   ├── fluent-patterns/
-│   ├── fluent-adapter-css/
+│   ├── fluent-adapter-css/        # CSS / UnoCSS preset(TS) / Tailwind
+│   ├── fluent-adapter-vue/        # Vue 3 + Vite 8 + TS
 │   ├── fluent-adapter-react/
 │   ├── fluent-adapter-flutter/
 │   └── fluent-verify/

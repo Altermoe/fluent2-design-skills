@@ -1,17 +1,28 @@
 ---
 name: fluent-adapter-react
-description: Consume Fluent 2 design tokens in React / Fluent UI React v9 — CSS-in-JS (makeStyles + @fluentui/tokens), runtime theme objects (webLightTheme/webDarkTheme), and FluentProvider theming. Pair with fluent-tokens / fluent-components / fluent-patterns.
-whenToUse: Building a React app and need to apply the Fluent design language via Fluent UI React v9 (@fluentui/react-components) or raw CSS-in-JS with the same tokens.
+description: Consume Fluent 2 design tokens in React / Fluent UI React v9 — CSS-in-JS (makeStyles + @fluentui/tokens), runtime theme objects (webLightTheme/webDarkTheme), FluentProvider theming, TypeScript-first on Vite 8. Pair with fluent-tokens / fluent-components / fluent-patterns.
+whenToUse: Building a React app and need to apply the Fluent design language via Fluent UI React v9 (@fluentui/react-components), TypeScript-first on Vite 8, or raw CSS-in-JS with the same tokens.
 ---
 
 # Fluent 2 → React Adapter
 
-Fluent 官方 React 实现是 **Fluent UI React v9**（`@fluentui/react-components`）。关键点在：同一份 token 有两种消费形态——
+Fluent 官方 React 实现是 **Fluent UI React v9**（`@fluentui/react-components`）。**TypeScript 优先、Vite 8 优先**：项目用 Vite 8（[Rolldown 稳定版](https://vite.dev/blog/announcing-vite8)）+ TS 模板。关键点在：同一份 token 有两种消费形态——
 
 - **`tokens`**（来自 `@fluentui/tokens`）：值是 **`var(--...)` 引用**，专门给 CSS-in-JS / makeStyles 用。
 - **`webLightTheme` / `webDarkTheme`**：值是**解析后的十六进制**，给运行时 JS theming / `FluentProvider` / 动态计算用。
 
 两者对应同一 token 名，只是表达不同。这也是「同一设计语言、不同表达」的教科书例子。
+
+## 脚手架（Vite 8 + TypeScript）
+
+```bash
+# React + TypeScript + Vite 8（Vite 8 是第一个 Rolldown 稳定版）
+npm create vite@latest my-app -- --template react-ts
+cd my-app && npm i @fluentui/react-components @fluentui/tokens
+```
+
+- 项目默认 `vite.config.ts` + `.tsx` 组件，TS 优先。
+- `webLightTheme`/`webDarkTheme` 与 `tokens` 都带完整类型，随包附带类型定义。
 
 ## 方式 A：CSS-in-JS + makeStyles（推荐，静态时用 tokens）
 

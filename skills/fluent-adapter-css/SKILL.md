@@ -1,14 +1,20 @@
 ---
 name: fluent-adapter-css
-description: Emit Fluent 2 design tokens as CSS custom properties and Tailwind config. Includes a ready-to-use fluent.css mapping every @fluentui/tokens value to var(--TokenName). Pair with fluent-tokens / fluent-components / fluent-patterns.
-whenToUse: Targeting plain CSS, CSS Modules, styled-components/CSS-in-JS, or Tailwind CSS, and need Fluent tokens expressed in that framework.
+description: Emit Fluent 2 design tokens as CSS custom properties, an UnoCSS preset (TypeScript), or a Tailwind config. Ships a ready fluent.css (var(--TokenName)) and a generated preset-fluent.ts. TypeScript-first. Pair with fluent-tokens / fluent-components / fluent-patterns.
+whenToUse: Targeting plain CSS, CSS Modules, CSS-in-JS, UnoCSS, or Tailwind CSS (TypeScript-first, e.g. Vite projects) and need Fluent tokens expressed in that framework.
 ---
 
-# Fluent 2 → CSS / Tailwind Adapter
+# Fluent 2 → CSS / UnoCSS / Tailwind Adapter
 
-把 Fluent token 翻译成 CSS 表达。本技能自带生成的 **`fluent.css`**（同目录），把 `data/tokens/fluent-tokens.json` 的每个值映射为 `var(--TokenName)`，token 名与 `@fluentui/tokens` 完全一致。
+把 Fluent token 翻译成 CSS 表达，跨 CSS 系列框架。本技能提供三种消费形态，**typeScript-first**（所有配置用 `.ts`）：
 
-## 直接使用
+1. **纯 CSS**：自带的 **`fluent.css`**，每个值映射为 `var(--TokenName)`，token 名与 `@fluentui/tokens` 完全一致。
+2. **UnoCSS**：自带的 **`preset-fluent.ts`**（TypeScript UnoCSS preset），注入变量 + 主题映射，开箱即用。
+3. **Tailwind**：把 token 注入 `tailwind.config.ts` 主题。
+
+三者共享同一 token 系统，**语义含义不变**——这是跨框架同一设计语言的关键。
+
+## 1) 纯 CSS：直接使用
 
 ```html
 <link rel="stylesheet" href="fluent.css">
@@ -18,38 +24,84 @@ whenToUse: Targeting plain CSS, CSS Modules, styled-components/CSS-in-JS, or Tai
 - 亮/暗主题：在 `<html>` 上切 `data-theme="light"` / `data-theme="dark"`，或在容器加 `.fluent-light` / `.fluent-dark`。
 - 全局 token（spacing/radius/stroke/duration/curve/font）在 `:root` 永远可用。
 
-## 命名约定
+## 2) UnoCSS（TypeScript 优先，推荐用于 Vite/TS 项目）
 
-- CSS 变量名 = 精确 token 名（保留驼峰）：`--colorNeutralBackground2`、`--borderRadiusMedium`、`--spacingHorizontalM`。
-- 语义 token 以 `--color...` 出现；全局以 `--spacing...`、`--borderRadius...`、`--strokeWidth...`、`--duration...`、`--curve...`、`--fontSize...` 等出现。
-- 在 CSS 里把形式统一为 **semantic-first**：组件用语义 token（`--colorCompoundBrandStroke`）而非全局灰色值。
+### 安装与配置
 
-## 生成/更新 CSS
-
-数值变更是从 token 数据再生成，不手改：
 ```bash
-node gen-css.js          # 重新生成 fluent.css
+pnpm add -D unocss
 ```
-依赖：`data/tokens/fluent-tokens.json`（由 fluent-tokens 提供）。gen-css.js 在 `skills/fluent-adapter-css/` 内。
 
-## Tailwind CSS 映射
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import UnoCSS from 'unocss/vite'
+import vue from '@vitejs/plugin-vue'      // Vue 项目用；React 项目换成 @vitejs/plugin-react
 
-把 Fluent token 注入 Tailwind 主题，用法一致：
+export default defineConfig({
+  plugins: [vue(), UnoCSS()],
+})
+```
 
-```js
-// tailwind.config.js
-const fluent = require('./fluent.css.map.json'); // 可选：生成的颜色/尺寸映射
-module.exports = {
+```ts
+// uno.config.ts
+import { defineConfig, presetWind3 } from 'unocss'
+import { presetFluent } from './preset-fluent'
+
+export default defineConfig({
+  presets: [presetWind3(), presetFluent()],
+})
+```
+
+入口引入生成的样式：
+
+```ts
+// src/main.ts
+import 'virtual:uno.css'
+```
+
+`preset-fluent.ts` 做两件事：
+- **preflight**：自动注入全部 Fluent CSS 变量（`:root` 全局 + `[data-theme=light|dark]` 语义），无需再手引 `fluent.css`。
+- **theme**：把 token 名注册为 UnoCSS 工具生成器，配色/间距/圆角/动效直接可用。
+
+### 使用
+
+```html
+<!-- 品牌主按钮 -->
+<button class="bg-colorBrandBackground text-colorNeutralForegroundOnBrand
+               rounded-fluent-md px-fluent-m duration-fluent-fast hover:bg-colorBrandBackgroundHover">
+  Save
+</button>
+```
+
+对应关系：
+- `bg-colorBrandBackground` → `background: var(--colorBrandBackground)`
+- `text-colorNeutralForeground1` → `color: var(--colorNeutralForeground1)`
+- `rounded-fluent-md` → `--borderRadiusMedium`
+- `p-fluent-m` / `px-fluent-s` → `--spacingHorizontalM/S`
+- `duration-fluent-fast` → `--durationFast`
+- 任意自定义值也可直接写 `bg-[var(--colorNeutralBackground2)]`（无需 config）。
+
+> `darkColors` 只在 `presetWind3` 的 dark variant 下覆盖，用于 `dark:bg-...`；单主题直接用 `bg-*` 即可。
+
+## 3) Tailwind 映射（Tailwind 3/4，`.ts` 优先）
+
+```ts
+// tailwind.config.ts
+import type { Config } from 'tailwindcss'
+
+export default {
+  content: ['./src/**/*.{vue,ts,tsx}'],
   theme: {
     extend: {
       colors: {
         neutral1: 'var(--colorNeutralBackground1)',
         neutral1hover: 'var(--colorNeutralBackground1Hover)',
-        brand1: 'var(--colorBrandBackground)',
-        compound1: 'var(--colorCompoundBrandBackground)',
+        brand: 'var(--colorBrandBackground)',
+        brandhover: 'var(--colorBrandBackgroundHover)',
         fg1: 'var(--colorNeutralForeground1)',
         fg2: 'var(--colorNeutralForeground2)',
-        danger: '#d13438', // global red.primary (#d13438) from @fluentui/tokens palette
+        danger: '#d13438', // 全局 red.primary (#d13438)
         stroke1: 'var(--colorNeutralStroke1)',
       },
       spacing: {
@@ -67,10 +119,27 @@ module.exports = {
       transitionDuration: { fast: 'var(--durationFast)', normal: 'var(--durationNormal)' },
     },
   },
-};
+} satisfies Config
 ```
 
-要点：Tailwind 只是把 Tailwind 类绑定到 `var(--TokenName)`，**语义含义不变**——跨框架同一 token 名。
+用 Tailwind 4（`@import "tailwindcss"` + CSS-first）时，在全局样式里用 `@theme` 引用变量即可。
+
+## 命名约定
+
+- CSS 变量名 = 精确 token 名（保留驼峰）：`--colorNeutralBackground2`、`--borderRadiusMedium`、`--spacingHorizontalM`。
+- 语义 token 以 `--color...` 出现；全局以 `--spacing...`、`--borderRadius...`、`--strokeWidth...`、`--duration...`、`--curve...`、`--fontSize...` 等出现。
+- 组件用语义 token（`--colorCompoundBrandStroke`）而非全局灰色值（semantic-first）。
+
+## 生成/更新文件
+
+数值变更是从 token 数据再生成，不手改：
+
+```bash
+node gen-css.js          # 重新生成 fluent.css
+node gen-preset.js       # 重新生成 preset-fluent.ts
+```
+
+依赖：`data/tokens/fluent-tokens.json`（由 fluent-tokens 提供）。两个生成脚本都在 `skills/fluent-adapter-css/` 内。
 
 ## 组件示例（CSS）
 
@@ -92,8 +161,9 @@ module.exports = {
 
 ## 注意事项
 
-- 只引用已存在的 `--TokenName`；拿不准值时查 `fluent.css` 或 `data/tokens/fluent-tokens.json`。
+- 只引用已存在的 `--TokenName`；拿不准值时查 `fluent.css` / `preset-fluent.ts` 或 `data/tokens/fluent-tokens.json`。
 - focus 用 `outline/box-shadow` 模拟描边，避免改变布局尺寸。
-- 自定义属性值（`rgba`、`cubic-bezier`）可直接套用，无需转换。
+- 自定义属性值（`rgba`、`cubic-bezier`）可直接套用。
+- TypeScript 优先：所有框架配置统一用 `.ts` 文件（`uno.config.ts` / `tailwind.config.ts` / `vite.config.ts`），并保证类型推导（`satisfies Config`、`defineConfig`）。
 
 > 结构/组件规格见 `fluent-components`；设计原则见 `fluent-foundations`。
