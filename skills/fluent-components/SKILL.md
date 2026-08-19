@@ -33,7 +33,7 @@ Focus ring 约定：`strokeWidthThick`（2px），颜色用与背景对比的 `c
 
 ## Button
 
-- 变体：**primary**（品牌底 `colorBrandBackground1`、hover/pressed 用 `colorBrandBackground1Hover/Pressed`）、**secondary/outline**（`colorNeutralBackground1` + `colorNeutralStroke1`）、**subtle**（透明底，hover 才显 `colorSubtleBackgroundHover`）、**transparent**、**danger**（`colorPaletteRedBackground3` / danger token）。
+- 变体：**primary**（品牌底 `colorBrandBackground`、hover/pressed 用 `colorBrandBackgroundHover/Pressed`）、**secondary/outline**（`colorNeutralBackground1` + `colorNeutralStroke1`）、**subtle**（透明底，hover 才显 `colorSubtleBackgroundHover`）、**transparent**、**danger**（全局红系 `red` scale——如 `red.primary #d13438`；在支持 `colorPaletteRedBackground3` 的版本里优先用该语义 token）。
 - 高度标度：small 24 / medium 32 / large 40（px）。
 - 圆角：`borderRadiusMedium`（4px）。
 - 内边距：`spacingHorizontalM`（12px）左右、垂直由高度标度定；图标与文字间距 `spacingHorizontalS`（8px）。
@@ -45,7 +45,7 @@ Focus ring 约定：`strokeWidthThick`（2px），颜色用与背景对比的 `c
 - 层级：caption2(10) / caption1(12) / body1(14) / body2(16) / subtitle2 / subtitle1(20) / title3(24) / title2(28) / title1(32) / largeTitle(40) / display(68)。字号后括号为 px（见 typography.styles）。
 - 行高随字号成套取用；`lineHeightBase*`。
 - 主文字 `colorNeutralForeground1`，次级 `colorNeutralForeground2/3`，禁用 `…Disabled`。
-- 错误态 `colorPaletteRedForeground*`（或 danger token）+ 提示文本双通道。
+- 错误态 用全局红系（`red.primary #d13438` / `red.tint10`；支持时用 `colorPaletteRedForeground3`）+ 提示文本双通道。
 
 ## Input / Textarea / Select
 
@@ -57,7 +57,7 @@ Focus ring 约定：`strokeWidthThick`（2px），颜色用与背景对比的 `c
 
 ## Checkbox / Radio / Switch
 
-- 未选 `colorNeutralStrokeAccessible`（图形），选中 `colorCompoundBrandBackground`，勾号 `colorNeutralForegroundOnColor`。
+- 未选 `colorNeutralStrokeAccessible`（图形），选中 `colorCompoundBrandBackground`，勾号 `colorNeutralForegroundOnBrand`。
 - Hover 用 `colorCompoundBrandBackgroundHover`；disabled 全套 `…Disabled`。
 - 触控目标 ≥ 40px；视觉图形小但热区大。
 
@@ -77,7 +77,7 @@ Focus ring 约定：`strokeWidthThick`（2px），颜色用与背景对比的 `c
 ## Menu / Popover / Tooltip
 
 - 表面 `colorNeutralBackground1`（或 WebView 用 `colorNeutralBackground2`），圆角 `borderRadiusMedium`/`Large`，描边 `colorNeutralStroke1`，`shadow16/20` 级别投影。
-- 菜单项 hover/selected 用 `colorSubtleBackgroundHover/Selected`；danger item 用 `colorPaletteRedForeground*`。
+- 菜单项 hover/selected 用 `colorSubtleBackgroundHover/Selected`；danger item 用全局红系（`red.primary`；支持时用 `colorPaletteRedForeground3`）。
 - 弹出层需 `pointer-events` 处理与 focus trap（无障碍）。
 
 ## Tabs / Nav

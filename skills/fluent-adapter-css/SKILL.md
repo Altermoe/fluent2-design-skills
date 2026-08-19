@@ -45,11 +45,11 @@ module.exports = {
       colors: {
         neutral1: 'var(--colorNeutralBackground1)',
         neutral1hover: 'var(--colorNeutralBackground1Hover)',
-        brand1: 'var(--colorBrandBackground1)',
-        compound1: 'var(--colorCompoundBrandBackground1)',
+        brand1: 'var(--colorBrandBackground)',
+        compound1: 'var(--colorCompoundBrandBackground)',
         fg1: 'var(--colorNeutralForeground1)',
         fg2: 'var(--colorNeutralForeground2)',
-        danger: 'var(--colorPaletteRedForeground3)',
+        danger: '#d13438', // global red.primary (#d13438) from @fluentui/tokens palette
         stroke1: 'var(--colorNeutralStroke1)',
       },
       spacing: {
@@ -76,15 +76,15 @@ module.exports = {
 
 ```css
 .fluent-button--primary {
-  background: var(--colorBrandBackground1);
-  color: var(--colorNeutralForegroundOnColor);
+  background: var(--colorBrandBackground);
+  color: var(--colorNeutralForegroundOnBrand);
   border: none;
   border-radius: var(--borderRadiusMedium);
   padding: 6px 12px;              /* 高 32 内 12px 水平 */
   font-family: var(--fontFamilyBase);
 }
-.fluent-button--primary:hover { background: var(--colorBrandBackground1Hover); }
-.fluent-button--primary:active{ background: var(--colorBrandBackground1Pressed); }
+.fluent-button--primary:hover { background: var(--colorBrandBackgroundHover); }
+.fluent-button--primary:active{ background: var(--colorBrandBackgroundPressed); }
 .fluent-button--primary:focus-visible {
   outline: 2px solid var(--colorCompoundBrandStroke); outline-offset: 2px;
 }

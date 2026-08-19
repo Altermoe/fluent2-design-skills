@@ -34,11 +34,11 @@ ThemeData fluentTheme(Brightness b) {
     brightness: b,
     colorScheme: ColorScheme(
       brightness: b,
-      primary: FluentLightColors.colorBrandBackground1,
-      onPrimary: FluentLightColors.colorNeutralForegroundOnColor,
+      primary: FluentLightColors.colorBrandBackground,
+      onPrimary: FluentLightColors.colorNeutralForegroundOnBrand,
       surface: FluentLightColors.colorNeutralBackground1,
       onSurface: FluentLightColors.colorNeutralForeground1,
-      error: FluentLightColors.colorPaletteRedForeground3,
+      error: const Color(0xFFD13438), // global red.primary from @fluentui/tokens palette
       // ... 其余必需槽补全
     ),
     cardTheme: CardThemeData(
@@ -60,7 +60,7 @@ ThemeData fluentTheme(Brightness b) {
 
 | Fluent 概念 | Flutter widget / 方式 |
 |---|---|
-| primary button | `FilledButton` + `backgroundColor=colorBrandBackground1`；hover `FilledButton.styleFrom(overlayColor:…)` |
+| primary button | `FilledButton` + `backgroundColor=colorBrandBackground`；hover `FilledButton.styleFrom(overlayColor:…)` |
 | secondary/outline | `OutlinedButton` + `side=BorderSide(color:colorNeutralStroke1)` |
 | text input | `TextField`/`InputDecorator` + `filled`、`OutlineInputBorder` |
 | card | `Card` + 语义底 + `borderRadius` |
