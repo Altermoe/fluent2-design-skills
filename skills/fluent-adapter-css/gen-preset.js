@@ -3,8 +3,38 @@
 //  - cssVars (valid TS object): selector -> { '--TokenName': value }
 //  - preflights stringifying cssVars into CSS
 //  - theme colours/spacing/radius/duration/font map token name -> CSS var
-const d = require('/home/cyrene/codes/default/fluent2-design-skills/data/tokens/fluent-tokens.json');
+//
+// Paths:
+//   - input  (--tokens / env FLUENT_TOKENS / default ../../data/tokens/fluent-tokens.json)
+//   - output (--out  / default <script dir>/preset-fluent.ts)
+// Defaults are resolved relative to THIS script's location (portable). Override
+// with --tokens / --out (or env vars) when the token file lives elsewhere.
+//
+// Usage: node gen-preset.js [--tokens <path>] [--out <path>]
 const fs = require('fs');
+const path = require('path');
+
+function arg(name, fallback) {
+  const i = process.argv.indexOf(name);
+  if (i !== -1 && process.argv[i + 1]) return process.argv[i + 1];
+  return fallback;
+}
+
+const tokensPath = arg('--tokens', process.env.FLUENT_TOKENS)
+  || path.join(__dirname, '..', '..', 'data', 'tokens', 'fluent-tokens.json');
+const outPath = arg('--out') || path.join(__dirname, 'preset-fluent.ts');
+
+if (!fs.existsSync(tokensPath)) {
+  console.error(
+    '[fluent gen-preset] Cannot find Fluent token data at: ' + path.resolve(tokensPath) + '\n' +
+    'Provide the real input path with: node gen-preset.js --tokens <path/to/fluent-tokens.json>\n' +
+    'The file is produced by installing @fluentui/tokens and running the project\'s token extraction.\n' +
+    'See the fluent-adapter-css skill "生成/更新文件" section. Ask a human if the path is unspecified.'
+  );
+  process.exit(1);
+}
+
+const d = require(path.resolve(tokensPath));
 
 const globals = {};
 Object.assign(globals, d.spacing.horizontal, d.spacing.vertical);
@@ -116,5 +146,5 @@ ${spMap}
 
 export default presetFluent
 `;
-fs.writeFileSync('/home/cyrene/codes/default/fluent2-design-skills/skills/fluent-adapter-css/preset-fluent.ts', ts);
-console.log('wrote preset-fluent.ts lines =', ts.split('\n').length);
+fs.writeFileSync(path.resolve(outPath), ts);
+console.log('wrote', path.resolve(outPath), 'lines =', ts.split('\n').length);

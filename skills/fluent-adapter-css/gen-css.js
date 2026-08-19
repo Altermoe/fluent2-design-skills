@@ -1,7 +1,40 @@
-// Generate CSS custom properties from Fluent tokens, using EXACT @fluentui/tokens
-// camelCase names as the custom-property name (most faithful, no mangling).
-const d = require('/home/cyrene/codes/default/fluent2-design-skills/data/tokens/fluent-tokens.json');
+// Generate fluent.css (CSS custom properties) from Fluent tokens.
+//
+// Paths:
+//   - input  (--tokens / env FLUENT_TOKENS / default ../../data/tokens/fluent-tokens.json)
+//   - output (--out  / default <script dir>/fluent.css)
+// Defaults are resolved relative to THIS script's location, so the script is
+// portable across checkouts. Override with --tokens / --out (or the env vars)
+// when the token file lives somewhere else — e.g. produced by `npm i @fluentui/tokens`.
+//
+// Usage:
+//   node gen-css.js
+//   node gen-css.js --tokens /abs/or/relative/path/to/fluent-tokens.json --out ./fluent.css
 const fs = require('fs');
+const path = require('path');
+
+function arg(name, fallback) {
+  const i = process.argv.indexOf(name);
+  if (i !== -1 && process.argv[i + 1]) return process.argv[i + 1];
+  return fallback;
+}
+
+const tokensPath = arg('--tokens', process.env.FLUENT_TOKENS)
+  || path.join(__dirname, '..', '..', 'data', 'tokens', 'fluent-tokens.json');
+const outPath = arg('--out')
+  || path.join(__dirname, 'fluent.css');
+
+if (!fs.existsSync(tokensPath)) {
+  console.error(
+    '[fluent gen-css] Cannot find Fluent token data at: ' + path.resolve(tokensPath) + '\n' +
+    'Provide the real input path with: node gen-css.js --tokens <path/to/fluent-tokens.json>\n' +
+    'The file is produced by installing @fluentui/tokens and running the project\'s token extraction.\n' +
+    'See the fluent-adapter-css skill "生成/更新文件" section. Ask a human if the path is unspecified.'
+  );
+  process.exit(1);
+}
+
+const d = require(path.resolve(tokensPath));
 
 const globals = {};
 Object.assign(globals, d.spacing.horizontal, d.spacing.vertical);
@@ -15,7 +48,7 @@ function emit(obj) {
     .join('\n');
 }
 
-const css = `/* Generated from @fluentui/tokens (source of truth: data/tokens/fluent-tokens.json).
+const css = `/* Generated from @fluentui/tokens (source of truth: data/tokens/fluent-tokens.json; actual path may be overridden via --tokens).
    Token names match @fluentui/tokens exactly. Consume as var(--TokenName). */
 :root {
 ${emit(globals)}
@@ -27,8 +60,8 @@ ${emit(d.alias.lightWeb)}
 ${emit(d.alias.darkWeb)}
 }
 `;
-fs.writeFileSync('/home/cyrene/codes/default/fluent2-design-skills/skills/fluent-adapter-css/fluent.css', css);
-console.log('wrote fluent.css lines =', css.split('\n').length,
+fs.writeFileSync(path.resolve(outPath), css);
+console.log('wrote', path.resolve(outPath), 'lines =', css.split('\n').length,
   'globals =', Object.keys(globals).length,
   'light =', Object.keys(d.alias.lightWeb).length,
   'dark =', Object.keys(d.alias.darkWeb).length);

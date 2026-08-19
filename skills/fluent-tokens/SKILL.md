@@ -19,6 +19,28 @@ whenToUse: Any time you must pick a concrete color/spacing/typography/radius/dur
 - `radius` — 圆角 · `strokeWidths` — 描边 · `durations` — 动画时长 · `curves` — 缓动曲线
 - `alias.lightWeb` / `alias.darkWeb` — **184 个语义 token** 的解析后取值（默认 web 品牌）
 
+### 这份数据怎么来 / 如何重建
+
+`data/fluent-tokens.json` 是从官方 `@fluentui/tokens` **抽取生成**的，不是手写值。若文件缺失或需跟随上游更新，按下面重建（需要真实网络 + 可写的临时目录）：
+
+```bash
+# 1. 在临时目录安装官方 token 包
+mkdir -p /tmp/fluent && cd /tmp/fluent
+npm i @fluentui/tokens --cache "$PWD/.npmcache"
+
+# 2. 抽取 global/alias 语义值（把下面的路径换成你实际 handle 到的包位置）
+#    参考仓库最初生成脚本 extract.mjs 的做法：
+#    - global/*.js 读全局 token
+#    - alias/{lightColor,darkColor}.js 的 generateColorTokens(brandWeb) 得到解析后的语义值
+#    输出合并为 { color, typography, spacing, radius, strokeWidths, durations, curves, alias:{lightWeb,darkWeb} }
+# 3. 把它写到本技能 data/fluent-tokens.json
+```
+
+重建要点：
+- **路径不写死**：抽取脚本里的包位置、临时目录、输出路径都应来自实际环境——AI 先 `pwd` 定位、用 glob 确认 `node_modules/@fluentui/tokens/lib/*.js` 真实存在，再填路径；拿不准就**询问人类**要路径或授权安装。
+- 语义值来自 `generateColorTokens(brand)`（正是其它 adapter 消费的 `alias.lightWeb/darkWeb`）。
+- 生成的 adapter 产物（`fluent.css`、`preset-fluent.ts`、`fluent_tokens.dart`）都只依赖这份 JSON；改 JSON 后重跑各自的 `gen-*` 脚本即可。
+
 ## 语义 token 命名规律
 
 - 前缀 `color-`、`font-`、`spacing-`、`borderRadius-`、`strokeWidth-`、`duration-`、`curve-`。

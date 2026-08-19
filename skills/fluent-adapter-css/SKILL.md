@@ -137,9 +137,24 @@ export default {
 ```bash
 node gen-css.js          # 重新生成 fluent.css
 node gen-preset.js       # 重新生成 preset-fluent.ts
+# 也可显式指定路径
+node gen-css.js --tokens <path/to/fluent-tokens.json> --out <path/to/fluent.css>
 ```
 
 依赖：`data/tokens/fluent-tokens.json`（由 fluent-tokens 提供）。两个生成脚本都在 `skills/fluent-adapter-css/` 内。
+
+### 路径怎么来（给后来 AI 的说明）
+
+生成脚本里**没有写死任何绝对路径**。它们默认相对**脚本自身位置**解析：
+- 输入 token 文件：默认 `<skill>/../../data/tokens/fluent-tokens.json`；
+- 输出文件：默认与脚本同目录。
+
+在跑脚本前，AI 必须**先确认该 token JSON 的真实地址**，任选其一：
+1. 本仓库自带 `fluent-tokens` skill，其 `data/fluent-tokens.json` 就是真实输入（默认相对路径即可命中共仓库布局）；
+2. 若 token 数据在别处（如由 `npm i @fluentui/tokens` 实时抽取而来），用 `--tokens <真实绝对或相对路径>` 指定；
+3. 若环境里没有该文件，**停下来询问人类**：请人类提供 `fluent-tokens.json` 的位置，或由 AI 先按 `fluent-tokens` / `@fluentui/tokens` 抽取生成它，再喂给脚本。
+
+脚本在找不到输入文件时会打印清晰错误提示并退出，不会用假的占位数据生成产物。
 
 ## 组件示例（CSS）
 

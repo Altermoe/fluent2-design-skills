@@ -1,4 +1,4 @@
-/* Generated from @fluentui/tokens (source of truth: data/tokens/fluent-tokens.json).
+/* Generated from @fluentui/tokens (source of truth: data/tokens/fluent-tokens.json; actual path may be overridden via --tokens).
    Token names match @fluentui/tokens exactly. Consume as var(--TokenName). */
 :root {
   --borderRadius2XLarge: 12px;

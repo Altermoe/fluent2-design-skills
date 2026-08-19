@@ -85,4 +85,14 @@ ThemeData fluentTheme(Brightness b) {
 
 `fluent_tokens.dart` 由 Node 脚本生成：`node gen-dart.js`（依赖 `data/tokens/fluent-tokens.json`）。建议把脚本纳入你的 dart 构建前置步骤。
 
+### 路径怎么来（给后来 AI 的说明）
+
+脚本里没有写死绝对路径，默认相对脚本自身位置解析（输入 `data/tokens/fluent-tokens.json`、输出与脚本同目录），可跨目录运行：
+
+```bash
+node gen-dart.js --tokens <path/to/fluent-tokens.json> --out <path/to/fluent_tokens.dart>
+```
+
+跑之前先确认 token JSON 的真实地址：仓库自带的 `fluent-tokens` skill 里有 `data/fluent-tokens.json`；若在别处则用 `--tokens` 指定；若环境里没有该文件，先按 `fluent-tokens` / `@fluentui/tokens` 抽取生成它，或**停下来询问人类**获取真实路径。找不到输入文件时脚本会打印清晰提示并退出，不会用占位数据生成产物。
+
 > 设计原则见 `fluent-foundations`；取 token 真值见 `fluent-tokens`。

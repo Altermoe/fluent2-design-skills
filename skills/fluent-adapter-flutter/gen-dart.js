@@ -1,9 +1,39 @@
 // Generate a clean Flutter Dart token file from Fluent tokens.
-const d = require('/home/cyrene/codes/default/fluent2-design-skills/data/tokens/fluent-tokens.json');
+//
+// Paths:
+//   - input  (--tokens / env FLUENT_TOKENS / default ../../data/tokens/fluent-tokens.json)
+//   - output (--out  / default <script dir>/fluent_tokens.dart)
+// Defaults are resolved relative to THIS script's location (portable). Override
+// with --tokens / --out (or env vars) when the token file lives elsewhere.
+//
+// Usage: node gen-dart.js [--tokens <path>] [--out <path>]
 const fs = require('fs');
+const path = require('path');
+
+function arg(name, fallback) {
+  const i = process.argv.indexOf(name);
+  if (i !== -1 && process.argv[i + 1]) return process.argv[i + 1];
+  return fallback;
+}
+
+const tokensPath = arg('--tokens', process.env.FLUENT_TOKENS)
+  || path.join(__dirname, '..', '..', 'data', 'tokens', 'fluent-tokens.json');
+const outPath = arg('--out') || path.join(__dirname, 'fluent_tokens.dart');
+
+if (!fs.existsSync(tokensPath)) {
+  console.error(
+    '[fluent gen-dart] Cannot find Fluent token data at: ' + path.resolve(tokensPath) + '\n' +
+    'Provide the real input path with: node gen-dart.js --tokens <path/to/fluent-tokens.json>\n' +
+    'The file is produced by installing @fluentui/tokens and running the project\'s token extraction.\n' +
+    'See the fluent-adapter-flutter skill "生成/更新" section (if any). Ask a human if the path is unspecified.'
+  );
+  process.exit(1);
+}
+
+const d = require(path.resolve(tokensPath));
 
 function colorExpr(hex) {
-  if (typeof hex !== 'string') return `const Color(0x00000000) /* ${name ?? ''} */`;
+  if (typeof hex !== 'string') return `const Color(0x00000000) /* unparsed: ${hex} */`;
   let m = hex.match(/^#([0-9a-fA-F]{6})$/);
   if (m) return `const Color(0xFF${m[1].toUpperCase()})`;
   m = hex.match(/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/);
@@ -76,5 +106,5 @@ ${fontSizeBlock}
 ${fontWeightBlock}
 }
 `;
-fs.writeFileSync('/home/cyrene/codes/default/fluent2-design-skills/skills/fluent-adapter-flutter/fluent_tokens.dart', out);
-console.log('wrote fluent_tokens.dart, lines =', out.split('\n').length, 'light=', lightLines.length, 'dark=', darkLines.length);
+fs.writeFileSync(path.resolve(outPath), out);
+console.log('wrote', path.resolve(outPath), 'lines =', out.split('\n').length, 'light=', lightLines.length, 'dark=', darkLines.length);
