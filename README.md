@@ -31,8 +31,9 @@ Fluent 2 的设计资产真正与框架解耦的核心是 **design tokens**（`@
 ## 数据来源
 
 - 语义 token 数值**直接从官方 `@fluentui/tokens` 包抽取**：`data/tokens/fluent-tokens.json`
-  （含 global 色板、typography、spacing、radius、stroke、durations、curves，以及 light/dark 两套 184 个语义 token 的真实解析值）。
-- 参考官方：[Fluent 2 Design tokens](https://fluent2.microsoft.design/design-tokens) 。
+  （含 global 色板、typography、spacing、radius、stroke、durations、curves、**高度 6 档 ×2 组投影（`shadow2..64` / `shadow2Brand..64Brand`，两层阴影）**，
+  以及 light/dark 两套 184 个语义 token 的真实解析值）。
+- 参考官方：[Fluent 2 Design tokens](https://fluent2.microsoft.design/design-tokens) · [Fluent 2 Elevation](https://fluent2.microsoft.design/elevation) 。
 - 本项目 skills 本身为 MIT 许可（Fluent token 值随其包许可证使用）。
 
 ## 目录结构
